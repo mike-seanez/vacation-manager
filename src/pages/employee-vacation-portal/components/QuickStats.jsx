@@ -41,14 +41,14 @@ const QuickStats = ({ stats }) => {
         <Icon name="BarChart3" size={20} className="text-primary" />
         <h2 className="text-lg font-semibold text-foreground">Estadísticas Rápidas</h2>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
         {statItems?.map((item, index) => (
           <div key={index} className={`${item?.bgColor} rounded-lg p-4`}>
             <div className="flex items-center space-x-2 mb-1">
               <Icon name={item?.icon} size={16} className={item?.color} />
               <span className="text-xs font-medium text-muted-foreground">{item?.label}</span>
             </div>
-            <p className={`text-xl font-bold ${item?.color}`}>{item?.value}</p>
+            <p className={`text-center text-xl font-bold ${item?.color}`}>{item?.value}</p>
           </div>
         ))}
       </div>

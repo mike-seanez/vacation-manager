@@ -35,14 +35,12 @@ const NavigationHeader = ({ onMenuToggle, user = null }) => {
           </Button>
           
           <Link to="/administrator-dashboard" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <svg
-                viewBox="0 0 24 24"
-                className="w-5 h-5 text-primary-foreground"
-                fill="currentColor"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+              <img
+                className="w-10 h-auto"
+                src="/public/assets/images/logo.png"
+                alt="logo"
+              />
             </div>
             <div className="hidden sm:block">
               <h1 className="text-lg font-semibold text-foreground">Corporativo CNI</h1>
@@ -95,7 +93,7 @@ const NavigationHeader = ({ onMenuToggle, user = null }) => {
               iconName="MoreHorizontal"
               iconSize={16}
             >
-              More
+              Más
             </Button>
             {moreOptionsMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-popover border border-border rounded-md shadow-elevation-2 z-400">

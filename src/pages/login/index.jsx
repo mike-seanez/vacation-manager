@@ -79,10 +79,13 @@ const Login = () => {
       <div className="w-full max-w-md space-y-8 bg-card p-8 rounded-lg shadow-elevation-2 border border-border">
         <div className="flex flex-col items-center justify-center">
           {/* App Logo */}
-          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
-            <Icon name="Calendar" size={32} className="text-primary-foreground" />
+          <div className="w-25 h-25 rounded-full flex items-center justify-center mb-4">
+            <Image
+              className="w-25 h-auto"
+              src="/public/assets/images/logo.png"
+              alt="logo"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Vacation Manager</h1>
           <p className="text-muted-foreground mt-2 text-center">Inicie sesión para acceder al sistema</p>
         </div>
 

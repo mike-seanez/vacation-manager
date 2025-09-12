@@ -12,13 +12,13 @@ const VacationUsageChart = () => {
     { month: 'Jun', solicitudes: 42, aprobadas: 38, denegadas: 4 }
   ];
 
-  const departmentData = [
-    { name: 'Desarrollo', value: 35, color: '#1E40AF' },
-    { name: 'Marketing', value: 25, color: '#10B981' },
-    { name: 'Ventas', value: 20, color: '#F59E0B' },
-    { name: 'RRHH', value: 12, color: '#EF4444' },
-    { name: 'Finanzas', value: 8, color: '#8B5CF6' }
-  ];
+  // const departmentData = [
+  //   { name: 'Desarrollo', value: 35, color: '#1E40AF' },
+  //   { name: 'Marketing', value: 25, color: '#10B981' },
+  //   { name: 'Ventas', value: 20, color: '#F59E0B' },
+  //   { name: 'RRHH', value: 12, color: '#EF4444' },
+  //   { name: 'Finanzas', value: 8, color: '#8B5CF6' }
+  // ];
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload?.length) {
@@ -54,16 +54,9 @@ const VacationUsageChart = () => {
     <div className="bg-card rounded-lg border border-border p-6 shadow-elevation-1">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-foreground">Análisis de Vacaciones</h3>
-        <div className="flex space-x-2">
-          <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md">
-            6 Meses
-          </button>
-          <button className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground rounded-md">
-            1 Año
-          </button>
-        </div>
+
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1">
         {/* Bar Chart - Monthly Trends */}
         <div>
           <h4 className="text-sm font-medium text-foreground mb-4 flex items-center">
@@ -92,7 +85,7 @@ const VacationUsageChart = () => {
         </div>
 
         {/* Pie Chart - Department Distribution */}
-        <div>
+        {/* <div>
           <h4 className="text-sm font-medium text-foreground mb-4 flex items-center">
             <Icon name="PieChart" size={16} className="mr-2 text-primary" />
             Por Departamento
@@ -118,7 +111,6 @@ const VacationUsageChart = () => {
             </ResponsiveContainer>
           </div>
           
-          {/* Legend */}
           <div className="grid grid-cols-2 gap-2 mt-4">
             {departmentData?.map((item, index) => (
               <div key={index} className="flex items-center space-x-2">
@@ -131,7 +123,7 @@ const VacationUsageChart = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
       {/* Summary Stats */}
       <div className="mt-6 pt-4 border-t border-border">

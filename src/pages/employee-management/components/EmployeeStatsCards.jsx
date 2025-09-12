@@ -43,15 +43,6 @@ const EmployeeStatsCards = ({ employees = [] }) => {
       change: '+12.3%',
       changeType: 'positive'
     },
-    {
-      title: 'Balance Alto (&gt;20 días)',
-      value: stats?.highVacationBalance,
-      icon: 'Calendar',
-      color: 'text-warning',
-      bgColor: 'bg-warning/10',
-      change: '-5.2%',
-      changeType: 'negative'
-    }
   ];
 
   return (

@@ -18,39 +18,39 @@ const RoleBasedSidebar = ({
       label: 'Dashboard',
       path: '/administrator-dashboard',
       icon: 'LayoutDashboard',
-      requiredRole: ['admin', 'hr', 'employee'],
+      requiredRole: ['admin', 'hr', 'empleado'],
       tooltip: 'Overview and quick actions'
     },
     {
-      label: 'Employee Management',
+      label: 'Manejo de empleados',
       path: '/employee-management',
       icon: 'Users',
       requiredRole: ['admin', 'hr'],
       tooltip: 'Manage employee profiles and data'
     },
     {
-      label: 'Vacation Requests',
+      label: 'Solicitudes de vacaciones',
       path: '/vacation-request-management',
       icon: 'Calendar',
-      requiredRole: ['admin', 'hr'],
+      requiredRole: ['admin', 'rh'],
       tooltip: 'Review and approve vacation requests'
     },
     {
-      label: 'My Vacation',
+      label: 'Mis vacaciones',
       path: '/employee-vacation-portal',
       icon: 'Plane',
-      requiredRole: ['admin', 'hr', 'employee'],
+      requiredRole: ['admin', 'hr', 'empleado'],
       tooltip: 'Submit and track vacation requests'
     },
     {
-      label: 'Blog Management',
+      label: 'Manejo de Blog',
       path: '/blog-management',
       icon: 'FileText',
       requiredRole: ['admin', 'hr'],
       tooltip: 'Create and manage company blog posts'
     },
     {
-      label: 'Holiday Calendar',
+      label: 'Calendario de festivos',
       path: '/holiday-calendar-management',
       icon: 'CalendarDays',
       requiredRole: ['admin', 'hr'],
@@ -142,11 +142,11 @@ const RoleBasedSidebar = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground capitalize">
-                    {userRole} Access
+                    {userRole}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {userRole === 'admin' ? 'Full system access' : 
-                     userRole === 'hr'? 'HR management access' : 'Employee self-service'}
+                    {userRole === 'admin' ? 'Acceso completo' : 
+                     userRole === 'hr'? 'Acceso de gestión HR' : 'Acceso de servicio al empleado'}
                   </p>
                 </div>
               </div>

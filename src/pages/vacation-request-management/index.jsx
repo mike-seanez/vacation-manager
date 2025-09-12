@@ -35,7 +35,7 @@ const VacationRequestManagement = () => {
         id: 101,
         name: 'María González Rodríguez',
         department: 'Recursos Humanos',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
         joinDate: '2022-03-15',
         tenure: 20,
         availableVacationDays: 12,

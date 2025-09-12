@@ -70,7 +70,7 @@ const AdministratorDashboard = () => {
       value: "15",
       icon: "Calendar",
       trend: "neutral",
-      trendValue: "0",
+      // trendValue: "1",
       color: "error"
     }
   ];
@@ -142,20 +142,16 @@ const AdministratorDashboard = () => {
           {/* Main Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column - Recent Vacation Requests */}
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-6">
               <RecentVacationRequests />
             </div>
 
             {/* Center Column - Quick Add & Blog Activity */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-6">
               <QuickAddEmployee />
               <RecentBlogActivity />
             </div>
-
-            {/* Right Column - Notifications */}
-            <div className="lg:col-span-4">
-              <SystemNotifications />
-            </div>
+            
           </div>
 
           {/* Charts Section */}
