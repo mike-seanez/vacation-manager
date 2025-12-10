@@ -66,7 +66,7 @@ const CalendarView = ({
           key={date}
           className={`h-24 border border-border cursor-pointer transition-smooth hover:bg-muted/50 ${
             holiday 
-              ? holiday?.type === 'national' ?'bg-red-50 border-red-200' :'bg-blue-50 border-blue-200'
+              ? holiday ?'bg-red-50 border-red-200' :'bg-blue-50 border-blue-200'
               : weekend 
                 ? 'bg-gray-50' :'bg-card hover:bg-muted/30'
           } ${today ? 'ring-2 ring-primary' : ''}`}
@@ -82,9 +82,9 @@ const CalendarView = ({
               </span>
               {holiday && (
                 <Icon 
-                  name={holiday?.type === 'national' ? 'Lock' : 'Calendar'} 
+                  name='Lock'
                   size={12} 
-                  className={holiday?.type === 'national' ? 'text-red-600' : 'text-blue-600'} 
+                  className='text-red-600'
                 />
               )}
             </div>
@@ -96,10 +96,8 @@ const CalendarView = ({
                   onHolidayClick(holiday);
                 }}
               >
-                <div className={`text-xs p-1 rounded truncate ${
-                  holiday?.type === 'national' ?'bg-red-100 text-red-800' :'bg-blue-100 text-blue-800'
-                }`}>
-                  {holiday?.name}
+                <div className={`text-xs p-1 rounded truncate bg-red-100 text-red-800`}>
+                  {holiday?.description}
                 </div>
               </div>
             )}
@@ -147,21 +145,6 @@ const CalendarView = ({
           >
             <span className="sr-only">Mes siguiente</span>
           </Button>
-        </div>
-
-        <div className="flex items-center space-x-2 text-xs">
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
-            <span className="text-muted-foreground">Nacional</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
-            <span className="text-muted-foreground">Empresa</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></div>
-            <span className="text-muted-foreground">Fin de semana</span>
-          </div>
         </div>
       </div>
       {/* Calendar Grid */}

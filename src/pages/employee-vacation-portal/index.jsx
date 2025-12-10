@@ -10,6 +10,10 @@ import EligibilityChecker from './components/EligibilityChecker';
 import QuickStats from './components/QuickStats';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import { useGetUser } from '../../hooks/useGetUser';
+import { useVacationsBalance } from 'domain/UseCases/vacationCases/useVacationBalance';
+import { useVacationsRequest } from 'domain/UseCases/vacationCases/useVacationRequest';
+import { useHoliday } from 'domain/UseCases/holidayCases/useHoliday';
 
 const EmployeeVacationPortal = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,99 +21,53 @@ const EmployeeVacationPortal = () => {
   const [activeTab, setActiveTab] = useState('request');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);
+  const currentUser = useGetUser();
+  const { getVacationBalance } = useVacationsBalance();
+  const { checkVacationEligibility, getVacationsByUserId, createVacationRequest } = useVacationsRequest();
+  const { getHolidays } = useHoliday();
+  const [vacationBalance, setVacationBalance] = useState(null);
+  const [employeeEligibility, setEmployeeEligibility] = useState(null);
+  const [vacationRequests, setVacationRequests] = useState(null);
+  const [quickStats, setQuickStats] = useState(null);
+  const [companyHolidays, setCompanyHolidays] = useState(null);
 
-  // Mock user data - in real app this would come from authentication context
-  const currentUser = {
-    id: 1,
-    name: "María González Hernández",
-    email: "maria.gonzalez@vacablog.com",
-    role: "employee",
-    joinDate: "2023-03-15",
-    position: "Desarrolladora Frontend",
-    department: "Tecnología"
-  };
+  useEffect(() => {
+    const getValues = async() => {      
+      const balance = await getVacationBalance();
+      const normalizedBalance = balance ? {
+        id: balance?.id,
+        user_id: balance?.user_id ?? balance?.userId,
+        year: balance?.year,
+        available_days: balance?.available_days ?? balance?.availableDays,
+        used_days: balance?.used_days ?? balance?.usedDays,
+        updated_at: balance?.updated_at ?? balance?.updatedAt,
+      } : null;
+      setVacationBalance(normalizedBalance);
 
-  // Mock vacation balance data
-  const vacationBalance = {
-    earnedDays: 12,
-    usedDays: 3,
-    pendingDays: 2,
-    availableDays: 7,
-    nextEarnDate: "15 de marzo, 2025"
-  };
+      const eligibility = await checkVacationEligibility();
+      const normalizedEligibility = eligibility ? {
+        joinDate: eligibility?.joinDate ?? eligibility?.join_date,
+        monthsEmployed: eligibility?.monthsEmployed ?? eligibility?.months_employed,
+        isEligible: (eligibility?.isEligible ?? eligibility?.isElegible) === true,
+        nextEligibilityDate: eligibility?.nextEligibilityDate ?? eligibility?.next_eligibility_date ?? null,
+      } : null;
+      setEmployeeEligibility(normalizedEligibility);
 
-  // Mock employee eligibility data
-  const employeeEligibility = {
-    joinDate: "2023-03-15",
-    monthsEmployed: 17,
-    isEligible: true,
-    nextEligibilityDate: null
-  };
+      const requests = await getVacationsByUserId(currentUser.id);
+      setVacationRequests(requests);
+      const stats = {
+        totalRequests: requests?.length,
+        approvedRequests: requests?.filter(request => request.status === 'approved')?.length,
+        pendingRequests: requests?.filter(request => request.status === 'pending')?.length,
+        deniedRequests: requests?.filter(request => request.status === 'denied')?.length,
+      };
+      setQuickStats(stats);
 
-  // Mock company holidays
-  const companyHolidays = [
-    "2024-12-25", // Christmas
-    "2024-12-31", // New Year's Eve
-    "2025-01-01", // New Year's Day
-    "2025-02-05", // Constitution Day
-    "2025-03-21", // Benito Juárez's Birthday
-    "2025-05-01", // Labor Day
-    "2025-09-16", // Independence Day
-    "2025-11-20", // Revolution Day
-  ];
-
-  // Mock vacation request history
-  const vacationHistory = [
-    {
-      id: 1,
-      startDate: "2024-07-15",
-      endDate: "2024-07-19",
-      days: 5,
-      reason: "Vacaciones familiares de verano",
-      status: "approved",
-      submittedAt: "2024-06-20T10:30:00Z",
-      adminComment: "Aprobado. Disfruta tus vacaciones."
-    },
-    {
-      id: 2,
-      startDate: "2024-11-25",
-      endDate: "2024-11-29",
-      days: 5,
-      reason: "Descanso de fin de año",
-      status: "pending",
-      submittedAt: "2024-10-15T14:20:00Z",
-      adminComment: null
-    },
-    {
-      id: 3,
-      startDate: "2024-04-10",
-      endDate: "2024-04-12",
-      days: 3,
-      reason: "Asuntos personales urgentes",
-      status: "denied",
-      submittedAt: "2024-03-25T09:15:00Z",
-      adminComment: "Denegado por falta de cobertura en el proyecto."
-    },
-    {
-      id: 4,
-      startDate: "2024-02-14",
-      endDate: "2024-02-16",
-      days: 3,
-      reason: "Celebración de aniversario",
-      status: "approved",
-      submittedAt: "2024-01-20T16:45:00Z",
-      adminComment: "Aprobado. Felicidades."
+      const holidays = await getHolidays();
+      setCompanyHolidays(holidays);
     }
-  ];
-
-  // Mock quick stats
-  const quickStats = {
-    totalRequests: 4,
-    approvedRequests: 2,
-    pendingRequests: 1,
-    deniedRequests: 1,
-    averageResponseTime: 7
-  };
+    getValues();
+  }, [currentUser]);
 
   const handleMenuToggle = () => {
     setSidebarOpen(!sidebarOpen);
@@ -120,21 +78,13 @@ const EmployeeVacationPortal = () => {
   };
 
   const handleVacationRequest = async (requestData) => {
-    setPendingRequest(requestData);
+    setPendingRequest({ ...requestData, user_id: currentUser.id });
     setShowConfirmDialog(true);
   };
 
   const confirmVacationRequest = async () => {
     try {
-      // Simulate API call
-      console.log('Submitting vacation request:', pendingRequest);
-      
-      // In real app, this would make an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success message
-      alert('¡Solicitud enviada exitosamente! Recibirás una notificación cuando sea revisada.');
-      
+      await createVacationRequest(pendingRequest);      
       setShowConfirmDialog(false);
       setPendingRequest(null);
     } catch (error) {
@@ -160,7 +110,7 @@ const EmployeeVacationPortal = () => {
         isCollapsed={sidebarCollapsed}
         isOpen={sidebarOpen}
         onClose={handleSidebarClose}
-        userRole={currentUser?.role}
+        userRole={currentUser?.role_id}
       />
       <main className={`transition-layout pt-16 ${sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-72'}`}>
         <div className="p-4 lg:p-6 max-w-7xl mx-auto">
@@ -187,11 +137,19 @@ const EmployeeVacationPortal = () => {
 
           {/* Eligibility Check */}
           <div className="mb-6">
-            <EligibilityChecker employeeData={employeeEligibility} />
+            {employeeEligibility ? (
+              <EligibilityChecker employeeData={employeeEligibility} />
+            ) : (
+              <div className="bg-muted/30 border border-border rounded-lg p-4 animate-pulse">
+                <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+                <div className="h-3 bg-muted rounded w-1/2 mb-1" />
+                <div className="h-3 bg-muted rounded w-2/5" />
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
-          <QuickActionPanel userRole={currentUser?.role} className="mb-6" />
+          <QuickActionPanel userRole={currentUser?.role_id} className="mb-6" />
 
           {/* Mobile Tab Navigation */}
           <div className="lg:hidden mb-6">
@@ -217,27 +175,27 @@ const EmployeeVacationPortal = () => {
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6">
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              {employeeEligibility?.isEligible && (
+              {employeeEligibility?.isEligible && typeof vacationBalance?.available_days === 'number' && (
                 <VacationRequestForm
-                  availableDays={vacationBalance?.availableDays}
+                  availableDays={vacationBalance?.available_days}
                   onSubmit={handleVacationRequest}
                   companyHolidays={companyHolidays}
                 />
               )}
               
-              <RequestHistoryTable requests={vacationHistory} />
+              <RequestHistoryTable requests={vacationRequests} />
             </div>
 
             {/* Right Column */}
             <div className="space-y-6">
-              <VacationBalanceCard balanceData={vacationBalance} />
-              <QuickStats stats={quickStats} />
+            {vacationBalance && <VacationBalanceCard balanceData={vacationBalance} /> }
+              {quickStats && <QuickStats stats={quickStats} />}
             </div>
           </div>
 
           {/* Mobile Content */}
           <div className="lg:hidden">
-            {activeTab === 'request' && employeeEligibility?.isEligible && (
+            {activeTab === 'request' && employeeEligibility?.isEligible && typeof vacationBalance?.availableDays === 'number' && (
               <VacationRequestForm
                 availableDays={vacationBalance?.availableDays}
                 onSubmit={handleVacationRequest}
@@ -246,14 +204,22 @@ const EmployeeVacationPortal = () => {
             )}
             
             {activeTab === 'balance' && (
-              <VacationBalanceCard balanceData={vacationBalance} />
+              vacationBalance ? (
+                <VacationBalanceCard balanceData={vacationBalance} />
+              ) : (
+                <div className="bg-muted/30 border border-border rounded-lg p-4 animate-pulse">
+                  <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+                  <div className="h-3 bg-muted rounded w-1/2 mb-1" />
+                  <div className="h-3 bg-muted rounded w-2/5" />
+                </div>
+              )
             )}
             
             {activeTab === 'history' && (
               <RequestHistoryTable requests={vacationHistory} />
             )}
             
-            {activeTab === 'stats' && (
+            {activeTab === 'stats' && quickStats && (
               <QuickStats stats={quickStats} />
             )}
           </div>

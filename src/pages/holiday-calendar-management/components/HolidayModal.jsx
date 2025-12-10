@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
-import Select from '../../../components/ui/Select';
 
 const HolidayModal = ({ 
   isOpen, 
@@ -13,36 +12,28 @@ const HolidayModal = ({
   mode = 'create' // 'create' or 'edit'
 }) => {
   const [formData, setFormData] = useState({
-    name: '',
     date: '',
-    type: 'company',
-    description: ''
+    description: '',
+    year: selectedDate?.year || new Date().getFullYear()
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const typeOptions = [
-    { value: 'company', label: 'Día festivo de empresa' },
-    { value: 'national', label: 'Día festivo nacional' }
-  ];
 
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && holiday) {
         setFormData({
-          name: holiday?.name || '',
           date: holiday?.date || '',
-          type: holiday?.type || 'company',
           description: holiday?.description || ''
         });
       } else if (mode === 'create' && selectedDate) {
         const { date, month, year } = selectedDate;
         const dateStr = `${year}-${String(month + 1)?.padStart(2, '0')}-${String(date)?.padStart(2, '0')}`;
         setFormData({
-          name: '',
           date: dateStr,
-          type: 'company',
-          description: ''
+          description: '',
+          year: selectedDate?.year || new Date().getFullYear()
         });
       }
       setErrors({});
@@ -67,16 +58,8 @@ const HolidayModal = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData?.name?.trim()) {
-      newErrors.name = 'El nombre del día festivo es obligatorio';
-    }
-
     if (!formData?.date) {
       newErrors.date = 'La fecha es obligatoria';
-    }
-
-    if (!formData?.type) {
-      newErrors.type = 'El tipo de día festivo es obligatorio';
     }
 
     setErrors(newErrors);
@@ -96,8 +79,8 @@ const HolidayModal = ({
       const holidayData = {
         ...formData,
         id: mode === 'edit' ? holiday?.id : Date.now(),
-        name: formData?.name?.trim(),
-        description: formData?.description?.trim()
+        description: formData?.description?.trim(),
+        year: formData?.year || new Date().getFullYear()
       };
 
       await onSave(holidayData);
@@ -160,9 +143,9 @@ const HolidayModal = ({
             label="Nombre del día festivo"
             type="text"
             placeholder="Ej: Día de la Independencia"
-            value={formData?.name}
-            onChange={(e) => handleInputChange('name', e?.target?.value)}
-            error={errors?.name}
+            value={formData?.description}
+            onChange={(e) => handleInputChange('description', e?.target?.value)}
+            error={errors?.description}
             required
             disabled={loading}
           />
@@ -176,34 +159,7 @@ const HolidayModal = ({
             required
             disabled={loading}
           />
-
-          <Select
-            label="Tipo de día festivo"
-            options={typeOptions}
-            value={formData?.type}
-            onChange={(value) => handleInputChange('type', value)}
-            error={errors?.type}
-            required
-            disabled={loading}
-            description={
-              formData?.type === 'national' ?'Los días festivos nacionales no pueden ser modificados por otros usuarios' :'Los días festivos de empresa pueden ser editados o eliminados'
-            }
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Descripción (opcional)
-            </label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-              rows={3}
-              placeholder="Descripción adicional del día festivo..."
-              value={formData?.description}
-              onChange={(e) => handleInputChange('description', e?.target?.value)}
-              disabled={loading}
-            />
-          </div>
-
+         
           {errors?.submit && (
             <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
               <p className="text-sm text-destructive">{errors?.submit}</p>

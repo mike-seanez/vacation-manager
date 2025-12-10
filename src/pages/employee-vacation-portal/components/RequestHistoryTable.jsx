@@ -54,7 +54,9 @@ const RequestHistoryTable = ({ requests = [] }) => {
   const paginatedRequests = filteredRequests?.slice(startIndex, startIndex + itemsPerPage);
 
   const formatDate = (dateString) => {
-    return new Date(dateString)?.toLocaleDateString('es-MX', {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1);
+    return date?.toLocaleDateString('es-MX', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
@@ -124,12 +126,12 @@ const RequestHistoryTable = ({ requests = [] }) => {
                   <tr key={request?.id} className="hover:bg-muted/30 transition-smooth">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-foreground">
-                        <div className="font-medium">{formatDate(request?.startDate)}</div>
-                        <div className="text-muted-foreground">al {formatDate(request?.endDate)}</div>
+                        <div className="font-medium">{formatDate(request?.start_date)}</div>
+                        <div className="text-muted-foreground">al {formatDate(request?.end_date)}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-foreground">{request?.days} días</span>
+                      <span className="text-sm font-medium text-foreground">{request?.total_days} días</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(request?.status)}
@@ -147,7 +149,7 @@ const RequestHistoryTable = ({ requests = [] }) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                      {formatDate(request?.submittedAt)}
+                      {formatDate(request?.created_at)}
                     </td>
                   </tr>
                 ))}

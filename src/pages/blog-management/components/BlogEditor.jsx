@@ -11,36 +11,47 @@ const BlogEditor = ({
   onCancel, 
   isEditing = false 
 }) => {
+  const blocksToMarkdown = (blocks = []) => {
+    return blocks?.map(b => {
+      if (b?.block_type === 'image' && b?.image_url) return `![image](${b?.image_url})`;
+      return String(b?.content || '').trim();
+    })?.join('\n');
+  };
+
+  const parseBlocksFromText = (text = '') => {
+    const lines = String(text).split('\n');
+    const blocks = [];
+    let position = 1;
+    for (const line of lines) {
+      const trimmed = line?.trim();
+      if (!trimmed) continue;
+      const match = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+      if (match && match[2]) {
+        blocks.push({ block_type: 'image', image_url: match[2], content: '', position });
+      } else {
+        blocks.push({ block_type: 'text', content: trimmed, image_url: '', position });
+      }
+      position += 1;
+    }
+    return blocks;
+  };
+
+  const isArrayBlocks = Array.isArray(post?.blocks);
+  const initialContentText = isArrayBlocks ? blocksToMarkdown(post?.blocks) : (post?.blocks || '');
+  const initialBlocks = isArrayBlocks ? post?.blocks : parseBlocksFromText(initialContentText);
+
   const [formData, setFormData] = useState({
     title: post?.title || '',
-    content: post?.content || '',
-    status: post?.status || 'draft',
-    category: post?.category || '',
-    publishDate: post?.publishDate || new Date()?.toISOString()?.split('T')?.[0],
-    featuredImage: post?.featuredImage || '',
-    attachments: post?.attachments || []
+    blocks: initialBlocks,
+    cover_image: post?.cover_image || '',
+    attachments: post?.attachments || [],
+    content_text: initialContentText,
   });
   
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
-
-  const categoryOptions = [
-    { value: 'company-news', label: 'Noticias de la Empresa' },
-    { value: 'employee-spotlight', label: 'Empleado Destacado' },
-    { value: 'benefits', label: 'Beneficios' },
-    { value: 'wellness', label: 'Bienestar' },
-    { value: 'training', label: 'Capacitación' },
-    { value: 'events', label: 'Eventos' },
-    { value: 'announcements', label: 'Anuncios' }
-  ];
-
-  const statusOptions = [
-    { value: 'draft', label: 'Borrador' },
-    { value: 'published', label: 'Publicado' },
-    { value: 'scheduled', label: 'Programado' }
-  ];
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -83,24 +94,51 @@ const BlogEditor = ({
     }));
   };
 
+  const [blogImages, setBlogImages] = useState([]);
+  const blogImagesInputRef = useRef(null);
+
   const insertImage = () => {
-    const imageUrl = prompt('Ingrese la URL de la imagen:');
-    if (imageUrl) {
+    // Open file selector instead of prompting for URL
+    blogImagesInputRef?.current?.click();
+  };
+
+  const handleBlogImagesUpload = (event) => {
+    const files = Array.from(event?.target?.files);
+    if (files.length > 0) {
+      // In a real implementation, you would upload these to your database or bucket
+      // and get back URLs. For now, we'll use object URLs as placeholders.
+      const newImages = files.map(file => ({
+        id: Date.now() + Math.random(),
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        url: URL.createObjectURL(file)
+      }));
+      
+      setBlogImages(prev => [...prev, ...newImages]);
+      
+      // Insert all selected images into the content
       const textarea = document.getElementById('content-editor');
       const cursorPos = textarea?.selectionStart;
-      const textBefore = formData?.content?.substring(0, cursorPos);
-      const textAfter = formData?.content?.substring(cursorPos);
-      const newContent = textBefore + `\n![Imagen](${imageUrl})\n` + textAfter;
+      const textBefore = formData?.content_text?.substring(0, cursorPos);
+      const textAfter = formData?.content_text?.substring(cursorPos);
       
-      handleInputChange('content', newContent);
+      let imageMarkdown = '\n';
+      newImages.forEach(image => {
+        imageMarkdown += `![${image.name}](${image.url})\n`;
+      });
+      
+      const newContent = textBefore + imageMarkdown + textAfter;
+      handleContentChange(newContent);
     }
   };
+
 
   const formatText = (format) => {
     const textarea = document.getElementById('content-editor');
     const start = textarea?.selectionStart;
     const end = textarea?.selectionEnd;
-    const selectedText = formData?.content?.substring(start, end);
+    const selectedText = formData?.content_text?.substring(start, end);
     
     let formattedText = '';
     switch (format) {
@@ -120,14 +158,37 @@ const BlogEditor = ({
         formattedText = selectedText;
     }
     
-    const newContent = formData?.content?.substring(0, start) + formattedText + formData?.content?.substring(end);
-    handleInputChange('content', newContent);
+    const newContent = formData?.content_text?.substring(0, start) + formattedText + formData?.content_text?.substring(end);
+    handleContentChange(newContent);
+  };
+
+  const handleContentChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      content_text: value,
+      blocks: parseBlocksFromText(value),
+    }));
   };
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await onSave(formData);
+      // In a real implementation, you would upload the images to your database or bucket here
+      // and replace the object URLs with the actual URLs from your storage
+      
+      // For now, we'll simulate this by adding the blogImages to the formData
+      const updatedFormData = {
+        ...formData,
+        blogImages: blogImages.map(image => ({
+          id: image.id,
+          name: image.name,
+          url: image.url, // In a real implementation, this would be the URL from your storage
+          size: image.size,
+          type: image.type
+        }))
+      };
+      
+      await onSave(updatedFormData);
     } finally {
       setIsLoading(false);
     }
@@ -205,12 +266,14 @@ const BlogEditor = ({
                 iconSize={16}
               />
               <div className="w-px h-6 bg-border mx-2" />
+              {/* Button for selecting multiple images for the blog */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={insertImage}
                 iconName="Image"
                 iconSize={16}
+                title="Seleccionar imágenes para el blog"
               />
               <Button
                 variant="ghost"
@@ -225,7 +288,7 @@ const BlogEditor = ({
               <div className="min-h-96 p-4 bg-muted rounded-md">
                 <h3 className="text-lg font-semibold mb-4">{formData?.title || 'Título del Post'}</h3>
                 <div className="prose max-w-none">
-                  {formData?.content?.split('\n')?.map((paragraph, index) => (
+                  {formData?.content_text?.split('\n')?.map((paragraph, index) => (
                     <p key={index} className="mb-2 text-foreground">
                       {paragraph?.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')?.replace(/\*(.*?)\*/g, '<em>$1</em>')?.replace(/## (.*)/g, '<h2>$1</h2>')}
                     </p>
@@ -236,12 +299,42 @@ const BlogEditor = ({
               <textarea
                 id="content-editor"
                 className="w-full min-h-96 p-4 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Escriba el contenido de su blog post aquí...\n\nPuede usar:\n**texto en negrita**\n*texto en cursiva*\n## Encabezados\n- Listas"
-                value={formData?.content}
-                onChange={(e) => handleInputChange('content', e?.target?.value)}
+                placeholder="Escriba el contenido de su blog post aquí..."
+                value={formData?.content_text}
+                onChange={(e) => handleContentChange(e?.target?.value)}
               />
             )}
           </div>
+
+          {/* Blog Images */}
+          {blogImages?.length > 0 && (
+            <div className="border border-border rounded-lg p-4 mb-4">
+              <h4 className="text-sm font-medium text-foreground mb-3">Imágenes del Blog</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {blogImages?.map((image) => (
+                  <div key={image?.id} className="relative group">
+                    <div className="aspect-square bg-background rounded-md overflow-hidden">
+                      <Image
+                        src={image?.url}
+                        alt={image?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setBlogImages(prev => prev.filter(img => img?.id !== image?.id));
+                      }}
+                      iconName="X"
+                      iconSize={14}
+                      className="absolute top-1 right-1 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* File Attachments */}
           {formData?.attachments?.length > 0 && (
@@ -278,47 +371,28 @@ const BlogEditor = ({
             onChange={handleFileUpload}
             className="hidden"
           />
+          
+          <input
+            ref={blogImagesInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleBlogImagesUpload}
+            className="hidden"
+          />
         </div>
 
         {/* Publishing Controls */}
         <div className="space-y-6">
-          <div className="bg-muted rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-4">Configuración de Publicación</h3>
-            
-            <div className="space-y-4">
-              <Select
-                label="Estado"
-                options={statusOptions}
-                value={formData?.status}
-                onChange={(value) => handleInputChange('status', value)}
-              />
-
-              <Select
-                label="Categoría"
-                options={categoryOptions}
-                value={formData?.category}
-                onChange={(value) => handleInputChange('category', value)}
-                placeholder="Seleccione una categoría"
-              />
-
-              <Input
-                label="Fecha de Publicación"
-                type="date"
-                value={formData?.publishDate}
-                onChange={(e) => handleInputChange('publishDate', e?.target?.value)}
-              />
-            </div>
-          </div>
-
           {/* Featured Image */}
           <div className="bg-muted rounded-lg p-4">
             <h3 className="text-sm font-semibold text-foreground mb-4">Imagen Destacada</h3>
             
-            {formData?.featuredImage ? (
+            {formData?.cover_image ? (
               <div className="space-y-3">
                 <div className="aspect-video bg-background rounded-md overflow-hidden">
                   <Image
-                    src={formData?.featuredImage}
+                    src={formData?.cover_image}
                     alt="Imagen destacada"
                     className="w-full h-full object-cover"
                   />
@@ -326,7 +400,7 @@ const BlogEditor = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleInputChange('featuredImage', '')}
+                  onClick={() => handleInputChange('cover_image', '')}
                   iconName="Trash2"
                   iconPosition="left"
                   className="w-full"

@@ -6,45 +6,52 @@ import Icon from '../../../components/AppIcon';
 
 const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    birthDate: '',
-    joinDate: '',
+    full_name: '',
+    birth_date: '',
+    join_date: '',
     position: '',
     email: '',
     username: '',
     password: '',
     confirmPassword: '',
-    department: '',
-    employeeId: '',
+    department_id: '',
+    employee_id: '',
     phone: '',
-    address: ''
+    address: '',
+    role_id: 0
   });
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const departmentOptions = departments?.map(dept => ({ value: dept, label: dept }));
+  const departmentOptions = departments?.map(dept => ({ value: dept?.id || dept, label: dept?.name || dept }));
 
+  const roleOptions = [
+    { value: 1, label: 'Administrador' },
+    { value: 2, label: 'Recursos humanos' },
+    { value: 3, label: 'Empleado'}
+  ];
+  
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData?.fullName?.trim()) {
-      newErrors.fullName = 'El nombre completo es requerido';
+    if (!formData?.full_name?.trim()) {
+      newErrors.full_name = 'El nombre completo es requerido';
     }
 
-    if (!formData?.birthDate) {
-      newErrors.birthDate = 'La fecha de nacimiento es requerida';
+    if (!formData?.birth_date) {
+      newErrors.birth_date = 'La fecha de nacimiento es requerida';
     } else {
-      const birthDate = new Date(formData.birthDate);
+      const birth_date = new Date(formData.birth_date);
       const today = new Date();
-      const age = today?.getFullYear() - birthDate?.getFullYear();
+      const age = today?.getFullYear() - birth_date?.getFullYear();
       if (age < 18) {
-        newErrors.birthDate = 'El empleado debe ser mayor de 18 años';
+        newErrors.birth_date = 'El empleado debe ser mayor de 18 años';
       }
     }
 
-    if (!formData?.joinDate) {
-      newErrors.joinDate = 'La fecha de ingreso es requerida';
+    if (!formData?.join_date) {
+      newErrors.join_date = 'La fecha de ingreso es requerida';
     }
 
     if (!formData?.position?.trim()) {
@@ -73,8 +80,12 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
-    if (!formData?.department) {
-      newErrors.department = 'El departamento es requerido';
+    if (!formData?.department_id) {
+      newErrors.department_id = 'El departamento es requerido';
+    }
+
+    if (!formData?.role_id) {
+      newErrors.role = 'El rol es requerido';
     }
 
     setErrors(newErrors);
@@ -99,9 +110,9 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
     
     try {
       // Calculate vacation balance based on Mexican labor law
-      const joinDate = new Date(formData.joinDate);
+      const join_date = new Date(formData.join_date);
       const today = new Date();
-      const yearsWorked = Math.floor((today - joinDate) / (365.25 * 24 * 60 * 60 * 1000));
+      const yearsWorked = Math.floor((today - join_date) / (365.25 * 24 * 60 * 60 * 1000));
       
       let vacationBalance = 0;
       if (yearsWorked >= 1) {
@@ -113,11 +124,10 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
 
       const newEmployee = {
         ...formData,
-        id: Date.now(),
         vacationBalance,
         status: 'active',
-        nextAccrualDate: new Date(joinDate.getFullYear() + yearsWorked + 1, joinDate.getMonth(), joinDate.getDate()),
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData?.fullName}`
+        nextAccrualDate: new Date(join_date.getFullYear() + yearsWorked + 1, join_date.getMonth(), join_date.getDate()),
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData?.full_name}`
       };
 
       await onSave(newEmployee);
@@ -132,18 +142,19 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
 
   const resetForm = () => {
     setFormData({
-      fullName: '',
-      birthDate: '',
-      joinDate: '',
+      full_name: '',
+      birth_date: '',
+      join_date: '',
       position: '',
       email: '',
       username: '',
       password: '',
       confirmPassword: '',
-      department: '',
-      employeeId: '',
+      department_id: '',
+      employee_id: '',
       phone: '',
-      address: ''
+      address: '',
+      role_id: 0
     });
     setErrors({});
   };
@@ -176,9 +187,9 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
             <Input
               label="Nombre Completo *"
               type="text"
-              value={formData?.fullName}
-              onChange={(e) => handleInputChange('fullName', e?.target?.value)}
-              error={errors?.fullName}
+              value={formData?.full_name}
+              onChange={(e) => handleInputChange('full_name', e?.target?.value)}
+              error={errors?.full_name}
               placeholder="Ej: Juan Carlos Pérez López"
               required
             />
@@ -186,26 +197,26 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
             <Input
               label="ID de Empleado"
               type="text"
-              value={formData?.employeeId}
-              onChange={(e) => handleInputChange('employeeId', e?.target?.value)}
+              value={formData?.employee_id}
+              onChange={(e) => handleInputChange('employee_id', e?.target?.value)}
               placeholder="Ej: EMP001"
             />
 
             <Input
               label="Fecha de Nacimiento *"
               type="date"
-              value={formData?.birthDate}
-              onChange={(e) => handleInputChange('birthDate', e?.target?.value)}
-              error={errors?.birthDate}
+              value={formData?.birth_date}
+              onChange={(e) => handleInputChange('birth_date', e?.target?.value)}
+              error={errors?.birth_date}
               required
             />
 
             <Input
               label="Fecha de Ingreso *"
               type="date"
-              value={formData?.joinDate}
-              onChange={(e) => handleInputChange('joinDate', e?.target?.value)}
-              error={errors?.joinDate}
+              value={formData?.join_date}
+              onChange={(e) => handleInputChange('join_date', e?.target?.value)}
+              error={errors?.join_date}
               required
             />
 
@@ -222,9 +233,9 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
             <Select
               label="Departamento *"
               options={departmentOptions}
-              value={formData?.department}
-              onChange={(value) => handleInputChange('department', value)}
-              error={errors?.department}
+              value={formData?.department_id}
+              onChange={(value) => handleInputChange('department_id', value)}
+              error={errors?.department_id}
               placeholder="Seleccionar departamento"
               required
             />
@@ -284,6 +295,16 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, departments = [] }) => {
             value={formData?.address}
             onChange={(e) => handleInputChange('address', e?.target?.value)}
             placeholder="Calle, Número, Colonia, Ciudad, Estado, CP"
+          />
+
+          <Select
+            label="Rol"
+            options={roleOptions}
+            value={formData?.role_id}
+            onChange={(value) => handleInputChange('role_id', value)}
+            error={errors?.role_id}
+            placeholder="Seleccionar rol"
+            required
           />
 
           <div className="bg-muted p-4 rounded-lg">

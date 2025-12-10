@@ -2,6 +2,16 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const EligibilityChecker = ({ employeeData }) => {
+  if (!employeeData) {
+    return (
+      <div className="bg-muted/30 border border-border rounded-lg p-4 animate-pulse">
+        <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+        <div className="h-3 bg-muted rounded w-1/2 mb-1" />
+        <div className="h-3 bg-muted rounded w-2/5" />
+      </div>
+    );
+  }
+
   const { joinDate, monthsEmployed, isEligible, nextEligibilityDate } = employeeData;
 
   const formatDate = (dateString) => {
@@ -13,7 +23,8 @@ const EligibilityChecker = ({ employeeData }) => {
   };
 
   const getMonthsUntilEligible = () => {
-    return 12 - monthsEmployed;
+    if (typeof monthsEmployed !== 'number') return 0;
+    return Math.max(0, 12 - monthsEmployed);
   };
 
   if (isEligible) {

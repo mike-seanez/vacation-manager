@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import { useAuth } from '../../domain/UseCases/authCases/useAuth';
 
 const NavigationHeader = ({ onMenuToggle, user = null }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [moreOptionsMenuOpen, setMoreOptionsMenuOpen] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // Logout logic here
-    console.log('Logging out...');
+    logout();
     setUserMenuOpen(false);
   };
 
@@ -35,90 +36,15 @@ const NavigationHeader = ({ onMenuToggle, user = null }) => {
           </Button>
           
           <Link to="/administrator-dashboard" className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+            <div className="w-22 h-10 rounded-lg flex items-center justify-center">
               <img
-                className="w-10 h-auto"
+                className="w-20 h-auto"
                 src="/public/assets/images/logo.png"
                 alt="logo"
               />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-lg font-semibold text-foreground">Corporativo CNI</h1>
-              <p className="text-xs text-muted-foreground">Administrador de vacaciones</p>
-            </div>
           </Link>
         </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-1">
-          <Link
-            to="/administrator-dashboard"
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-smooth ${
-              location?.pathname === '/administrator-dashboard' ?'bg-primary text-primary-foreground' :'text-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/employee-management"
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-smooth ${
-              location?.pathname === '/employee-management' ?'bg-primary text-primary-foreground' :'text-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            Empleados
-          </Link>
-          <Link
-            to="/vacation-request-management"
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-smooth ${
-              location?.pathname === '/vacation-request-management' ?'bg-primary text-primary-foreground' :'text-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            Solicitudes
-          </Link>
-          <Link
-            to="/employee-vacation-portal"
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-smooth ${
-              location?.pathname === '/employee-vacation-portal' ?'bg-primary text-primary-foreground' :'text-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            Mis vacaciones
-          </Link>
-          
-          {/* More Menu */}
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMoreOptionsMenuOpen(!moreOptionsMenuOpen)}
-              iconName="MoreHorizontal"
-              iconSize={16}
-            >
-              Más
-            </Button>
-            {moreOptionsMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-popover border border-border rounded-md shadow-elevation-2 z-400">
-                <div className="py-1">
-                  <Link
-                    to="/blog-management"
-                    className="block px-4 py-2 text-sm text-popover-foreground hover:bg-muted transition-smooth"
-                    onClick={() => setUserMenuOpen(false)}
-                  >
-                    <Icon name="FileText" size={16} className="inline mr-2" />
-                    Administrar blog
-                  </Link>
-                  <Link
-                    to="/holiday-calendar-management"
-                    className="block px-4 py-2 text-sm text-popover-foreground hover:bg-muted transition-smooth"
-                    onClick={() => setUserMenuOpen(false)}
-                  >
-                    <Icon name="Calendar" size={16} className="inline mr-2" />
-                    Calendario de festivos
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </nav>
 
         {/* User Menu */}
         <div className="flex items-center space-x-4">
@@ -145,7 +71,7 @@ const NavigationHeader = ({ onMenuToggle, user = null }) => {
                 <Icon name="User" size={16} color="white" />
               </div>
               <span className="hidden md:block text-sm font-medium text-foreground">
-                {user?.name || 'Admin User'}
+                {user?.full_name || 'Usuario'}
               </span>
               <Icon name="ChevronDown" size={16} />
             </Button>

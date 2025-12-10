@@ -20,7 +20,7 @@ const EmployeeFilters = ({
 
   const departmentOptions = [
     { value: '', label: 'Todos los departamentos' },
-    ...departments?.map(dept => ({ value: dept, label: dept }))
+    ...departments?.map(dept => ({ value: dept.id, label: dept?.name || dept }))
   ];
 
   const handleInputChange = (field, value) => {
@@ -72,12 +72,12 @@ const EmployeeFilters = ({
         />
 
         {/* Status Filter */}
-        <Select
+        {/* <Select
           placeholder="Seleccionar estado"
           options={statusOptions}
           value={filters?.status}
           onChange={(value) => handleInputChange('status', value)}
-        />
+        /> */}
 
         {/* Date Range Filters */}
         <Input
@@ -116,13 +116,13 @@ const EmployeeFilters = ({
       {/* Quick Filter Buttons */}
       <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
         <span className="text-sm font-medium text-muted-foreground mr-2">Filtros rápidos:</span>
-        <Button
+        {/* <Button
           variant="outline"
           size="xs"
           onClick={() => onFilterChange({ ...filters, status: 'active' })}
         >
           Solo Activos
-        </Button>
+        </Button> */}
         <Button
           variant="outline"
           size="xs"

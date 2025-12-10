@@ -1,49 +1,22 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { useVacationsRequest } from "../../../domain/UseCases/vacationCases/useVacationRequest";
+import { useState, useEffect } from 'react';
+
+
 
 const RecentVacationRequests = () => {
-  const recentRequests = [
-    {
-      id: 1,
-      employeeName: "María González",
-      employeeAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      department: "Recursos Humanos",
-      requestDate: "2025-01-15",
-      startDate: "2025-02-10",
-      endDate: "2025-02-14",
-      days: 5,
-      reason: "Vacaciones familiares",
-      status: "pending",
-      urgency: "normal"
-    },
-    {
-      id: 2,
-      employeeName: "Carlos Rodríguez",
-      employeeAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      department: "Desarrollo",
-      requestDate: "2025-01-14",
-      startDate: "2025-02-05",
-      endDate: "2025-02-07",
-      days: 3,
-      reason: "Asuntos personales",
-      status: "pending",
-      urgency: "high"
-    },
-    {
-      id: 3,
-      employeeName: "Ana Martínez",
-      employeeAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      department: "Marketing",
-      requestDate: "2025-01-13",
-      startDate: "2025-03-01",
-      endDate: "2025-03-10",
-      days: 8,
-      reason: "Vacaciones de primavera",
-      status: "pending",
-      urgency: "normal"
-    }
-  ];
+    const [recentRequests, setRecentRequests] = useState([]);
+    const { getAllVacations } = useVacationsRequest();
+
+    useEffect(() => {
+      const fetchRecent = async () => {
+        const vacations = await getAllVacations();
+        setRecentRequests(vacations?.filter(request => request?.status === 'pending') || []);
+      };
+      fetchRecent();
+    }, []);
 
   const handleApprove = (requestId) => {
     console.log(`Aprobar solicitud ${requestId}`);
@@ -70,6 +43,9 @@ const RecentVacationRequests = () => {
         </Button>
       </div>
       <div className="space-y-4">
+        {recentRequests?.length === 0 && (
+          <p className="text-center text-muted-foreground">No hay solicitudes recientes.</p>
+        )}
         {recentRequests?.map((request) => (
           <div key={request?.id} className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-smooth">
             <div className="flex items-start justify-between mb-3">

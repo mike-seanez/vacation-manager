@@ -1,20 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
 import Image from '../../components/AppImage';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../domain/UseCases/authCases/useAuth';
+
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { login, isAuthenticated, loadingAuth, logout } = useAuth();
+
+    useEffect(() => {
+    checkAuth();
+  }, [isAuthenticated]);
+
+  const checkAuth = () => {
+    if (isAuthenticated) {
+      navigate("/employee-vacation-portal");
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -38,8 +52,8 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.username.trim()) {
-      newErrors.username = 'El nombre de usuario es requerido';
+    if (!formData.email.trim()) {
+      newErrors.email = 'El correo electrónico es requerido';
     }
     
     if (!formData.password) {
@@ -52,18 +66,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
     
     setIsLoading(true);
     
     try {
-      // Here you would normally make an API call to authenticate
-      // For now, we'll just simulate a successful login after a delay
-      setTimeout(() => {
-        // Redirect to dashboard after successful login
-        navigate('/administrator-dashboard');
-      }, 1500);
+      setTimeout(async () => {
+        await login(formData.email, formData.password);
+      }, 1000);
     } catch (error) {
       console.error('Login error:', error);
       setErrors({
@@ -97,12 +107,12 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="Nombre de Usuario"
+            label="Email empleado"
             type="text"
-            value={formData.username}
-            onChange={(e) => handleInputChange('username', e.target.value)}
-            error={errors.username}
-            placeholder="Ingrese su nombre de usuario"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            error={errors.email}
+            placeholder="Ingrese su correo electrónico"
             required
           />
 

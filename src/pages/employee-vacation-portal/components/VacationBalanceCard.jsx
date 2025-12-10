@@ -2,7 +2,21 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const VacationBalanceCard = ({ balanceData }) => {
-  const { earnedDays, usedDays, pendingDays, availableDays, nextEarnDate } = balanceData;
+    if (!balanceData) {
+    return (
+      <div className="bg-muted/30 border border-border rounded-lg p-6 shadow-elevation-1 animate-pulse">
+        <div className="h-5 bg-muted rounded w-1/3 mb-4" />
+        <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+          <div className="bg-muted rounded-lg p-4 h-20" />
+          <div className="bg-muted rounded-lg p-4 h-20" />
+          <div className="bg-muted rounded-lg p-4 h-20" />
+          <div className="bg-muted rounded-lg p-4 h-20" />
+        </div>
+      </div>
+    );
+  }
+
+  const { used_days, available_days } = balanceData;
 
   return (
     <div className="bg-card rounded-lg border border-border p-6 shadow-elevation-1">
@@ -17,46 +31,22 @@ const VacationBalanceCard = ({ balanceData }) => {
       <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
         <div className="bg-muted rounded-lg p-4">
           <div className="flex items-center mb-2">
-            <Icon name="Plus" size={16} className="text-success" />
-            <span className="text-sm font-medium text-muted-foreground">Días Ganados</span>
-          </div>
-          <p className="text-center text-2xl font-bold text-success">{earnedDays}</p>
-        </div>
-
-        <div className="bg-muted rounded-lg p-4">
-          <div className="flex items-center mb-2">
             <Icon name="Minus" size={16} className="text-warning" />
             <span className="text-sm font-medium text-muted-foreground">Días Usados</span>
           </div>
-          <p className="text-center text-2xl font-bold text-warning">{usedDays}</p> 
+          <p className="text-center text-2xl font-bold text-warning">{used_days}</p> 
         </div>
 
-        <div className="bg-muted rounded-lg p-4">
-          <div className="flex items-center mb-2">
-            <Icon name="Clock" size={16} className="text-accent" />
-            <span className="text-sm font-medium text-muted-foreground">Pendientes</span>
-          </div>
-          <p className="text-center text-2xl font-bold text-accent">{pendingDays}</p>
-        </div>
 
         <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
           <div className="flex items-center mb-2">
             <Icon name="CheckCircle" size={16} className="text-primary" />
             <span className="text-sm font-medium text-primary">Disponibles</span>
           </div>
-          <p className="text-center text-3xl font-bold text-primary">{availableDays}</p>
+          <p className="text-center text-3xl font-bold text-primary">{available_days}</p>
         </div>
       </div>
 
-      <div className="bg-muted/50 rounded-lg p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Icon name="Info" size={16} className="text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Próximos días a ganar:</span>
-          </div>
-          <span className="text-sm font-medium text-foreground">{nextEarnDate}</span>
-        </div>
-      </div>
     </div>
   );
 };

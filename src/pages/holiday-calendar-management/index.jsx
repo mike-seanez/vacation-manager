@@ -7,8 +7,9 @@ import CalendarView from './components/CalendarView';
 import HolidayList from './components/HolidayList';
 import HolidayModal from './components/HolidayModal';
 import YearNavigation from './components/YearNavigation';
-import BulkImportModal from './components/BulkImportModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
+import { useGetUser } from '../../hooks/useGetUser';
+import { useHoliday } from '../../domain/UseCases/holidayCases/useHoliday';
 
 const HolidayCalendarManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,92 +17,98 @@ const HolidayCalendarManagement = () => {
   const [selectedYear, setSelectedYear] = useState(new Date()?.getFullYear());
   const [holidays, setHolidays] = useState([]);
   const [holidayModalOpen, setHolidayModalOpen] = useState(false);
-  const [bulkImportModalOpen, setBulkImportModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedHoliday, setSelectedHoliday] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState('create');
+  const currentUser = useGetUser();
+  const { getHolidays, createHoliday, updateHoliday, deleteHoliday } = useHoliday();
+  const [mockHolidays, setMockHolidays] = useState([]);
 
-  // Mock user data
-  const currentUser = {
-    name: "María González",
-    email: "maria.gonzalez@vacablog.com",
-    role: "admin"
-  };
+  useEffect(() => {
+    // Fetch holidays when component mounts
+    const fetchHolidays = async () => {
+      const response = await getHolidays();
+      setMockHolidays(response || []);
+      setHolidays(response || []);
+      console.log('response ', response);
+    };
+    fetchHolidays();
+  }, []);
 
   // Mock holidays data with Mexican national holidays
-  const mockHolidays = [
-    {
-      id: 1,
-      name: "Año Nuevo",
-      date: `${selectedYear}-01-01`,
-      type: "national",
-      description: "Celebración del Año Nuevo"
-    },
-    {
-      id: 2,
-      name: "Día de la Constitución",
-      date: `${selectedYear}-02-05`,
-      type: "national",
-      description: "Conmemoración de la Constitución Mexicana"
-    },
-    {
-      id: 3,
-      name: "Natalicio de Benito Juárez",
-      date: `${selectedYear}-03-18`,
-      type: "national",
-      description: "Día de Benito Juárez"
-    },
-    {
-      id: 4,
-      name: "Día del Trabajo",
-      date: `${selectedYear}-05-01`,
-      type: "national",
-      description: "Día Internacional del Trabajo"
-    },
-    {
-      id: 5,
-      name: "Día de la Independencia",
-      date: `${selectedYear}-09-16`,
-      type: "national",
-      description: "Grito de Independencia de México"
-    },
-    {
-      id: 6,
-      name: "Día de la Revolución",
-      date: `${selectedYear}-11-20`,
-      type: "national",
-      description: "Revolución Mexicana"
-    },
-    {
-      id: 7,
-      name: "Navidad",
-      date: `${selectedYear}-12-25`,
-      type: "national",
-      description: "Celebración de Navidad"
-    },
-    {
-      id: 8,
-      name: "Día de la Empresa",
-      date: `${selectedYear}-06-15`,
-      type: "company",
-      description: "Aniversario de la fundación de la empresa"
-    },
-    {
-      id: 9,
-      name: "Día del Empleado",
-      date: `${selectedYear}-08-20`,
-      type: "company",
-      description: "Reconocimiento a todos los empleados"
-    },
-    {
-      id: 10,
-      name: "Cierre de Fin de Año",
-      date: `${selectedYear}-12-31`,
-      type: "company",
-      description: "Cierre administrativo de fin de año"
-    }
-  ];
+  // const mockHolidays = [
+  //   {
+  //     id: 1,
+  //     name: "Año Nuevo",
+  //     date: `${selectedYear}-01-01`,
+  //     type: "national",
+  //     description: "Celebración del Año Nuevo"
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Día de la Constitución",
+  //     date: `${selectedYear}-02-05`,
+  //     type: "national",
+  //     description: "Conmemoración de la Constitución Mexicana"
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Natalicio de Benito Juárez",
+  //     date: `${selectedYear}-03-18`,
+  //     type: "national",
+  //     description: "Día de Benito Juárez"
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Día del Trabajo",
+  //     date: `${selectedYear}-05-01`,
+  //     type: "national",
+  //     description: "Día Internacional del Trabajo"
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Día de la Independencia",
+  //     date: `${selectedYear}-09-16`,
+  //     type: "national",
+  //     description: "Grito de Independencia de México"
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Día de la Revolución",
+  //     date: `${selectedYear}-11-20`,
+  //     type: "national",
+  //     description: "Revolución Mexicana"
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Navidad",
+  //     date: `${selectedYear}-12-25`,
+  //     type: "national",
+  //     description: "Celebración de Navidad"
+  //   },
+  //   {
+  //     id: 8,
+  //     name: "Día de la Empresa",
+  //     date: `${selectedYear}-06-15`,
+  //     type: "company",
+  //     description: "Aniversario de la fundación de la empresa"
+  //   },
+  //   {
+  //     id: 9,
+  //     name: "Día del Empleado",
+  //     date: `${selectedYear}-08-20`,
+  //     type: "company",
+  //     description: "Reconocimiento a todos los empleados"
+  //   },
+  //   {
+  //     id: 10,
+  //     name: "Cierre de Fin de Año",
+  //     date: `${selectedYear}-12-31`,
+  //     type: "company",
+  //     description: "Cierre administrativo de fin de año"
+  //   }
+  // ];
 
   useEffect(() => {
     // Update holidays when year changes
@@ -110,6 +117,7 @@ const HolidayCalendarManagement = () => {
       date: holiday?.date?.replace(/^\d{4}/, selectedYear?.toString())
     }));
     setHolidays(updatedHolidays);
+    console.log('holidays ', holidays);
   }, [selectedYear]);
 
   const handleMenuToggle = () => {
@@ -172,8 +180,10 @@ const HolidayCalendarManagement = () => {
       setHolidays(prev => prev?.map(h => 
         h?.id === holidayData?.id ? holidayData : h
       ));
+      await updateHoliday(holidayData, holidayData?.id);
     } else {
       setHolidays(prev => [...prev, holidayData]);
+      await createHoliday(holidayData);
     }
     setHolidayModalOpen(false);
   };
@@ -181,34 +191,12 @@ const HolidayCalendarManagement = () => {
   const handleConfirmDelete = async () => {
     if (selectedHoliday) {
       setHolidays(prev => prev?.filter(h => h?.id !== selectedHoliday?.id));
+      await deleteHoliday(selectedHoliday?.id);
       setDeleteModalOpen(false);
       setSelectedHoliday(null);
     }
   };
 
-  const handleBulkImport = async (importedHolidays) => {
-    const newHolidays = importedHolidays?.map(holiday => ({
-      ...holiday,
-      id: Date.now() + Math.random()
-    }));
-    setHolidays(prev => [...prev, ...newHolidays]);
-    setBulkImportModalOpen(false);
-  };
-
-  const handleExport = () => {
-    const csvContent = [
-      'Nombre,Fecha,Tipo,Descripción',
-      ...holidays?.map(h => `"${h?.name}","${h?.date}","${h?.type}","${h?.description || ''}"`)
-    ]?.join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL?.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dias_festivos_${selectedYear}.csv`;
-    a?.click();
-    window.URL?.revokeObjectURL(url);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -220,7 +208,7 @@ const HolidayCalendarManagement = () => {
         isCollapsed={sidebarCollapsed}
         isOpen={sidebarOpen}
         onClose={handleSidebarClose}
-        userRole={currentUser?.role}
+        userRole={currentUser?.role_id}
       />
       <main className={`pt-16 transition-layout ${
         sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-72'
@@ -241,7 +229,7 @@ const HolidayCalendarManagement = () => {
             </div>
 
             <QuickActionPanel 
-              userRole={currentUser?.role}
+              userRole={currentUser?.role_id}
               className="mb-6"
             />
           </div>
@@ -250,8 +238,6 @@ const HolidayCalendarManagement = () => {
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
             onAddHoliday={handleAddHoliday}
-            onBulkImport={() => setBulkImportModalOpen(true)}
-            onExport={handleExport}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -286,11 +272,7 @@ const HolidayCalendarManagement = () => {
         selectedDate={selectedDate}
         mode={modalMode}
       />
-      <BulkImportModal
-        isOpen={bulkImportModalOpen}
-        onClose={() => setBulkImportModalOpen(false)}
-        onImport={handleBulkImport}
-      />
+
       <DeleteConfirmModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}

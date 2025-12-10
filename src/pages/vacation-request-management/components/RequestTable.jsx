@@ -12,8 +12,10 @@ const RequestTable = ({
   onSelectRequest,
   onSelectAll
 }) => {
-  const [sortField, setSortField] = useState('submissionDate');
+  const [sortField, setSortField] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
+
+  console.log('requests', requests);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -96,24 +98,24 @@ const RequestTable = ({
         <table className="w-full">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="w-12 px-4 py-3">
+              {/* <th className="w-12 px-4 py-3">
                 <input
                   type="checkbox"
                   checked={selectedRequests?.length === requests?.length && requests?.length > 0}
                   onChange={(e) => onSelectAll(e?.target?.checked)}
                   className="rounded border-border"
                 />
-              </th>
+              </th> */}
               <th className="text-left px-4 py-3 text-sm font-semibold text-foreground">
                 Empleado
               </th>
               <th 
                 className="text-left px-4 py-3 text-sm font-semibold text-foreground cursor-pointer hover:bg-muted/80 transition-smooth"
-                onClick={() => handleSort('startDate')}
+                onClick={() => handleSort('start_date')}
               >
                 <div className="flex items-center space-x-1">
                   <span>Fechas de Vacaciones</span>
-                  <SortIcon field="startDate" />
+                  <SortIcon field="start_date" />
                 </div>
               </th>
               <th className="text-left px-4 py-3 text-sm font-semibold text-foreground">
@@ -124,11 +126,11 @@ const RequestTable = ({
               </th>
               <th 
                 className="text-left px-4 py-3 text-sm font-semibold text-foreground cursor-pointer hover:bg-muted/80 transition-smooth"
-                onClick={() => handleSort('submissionDate')}
+                onClick={() => handleSort('created_at')}
               >
                 <div className="flex items-center space-x-1">
                   <span>Fecha de Solicitud</span>
-                  <SortIcon field="submissionDate" />
+                  <SortIcon field="created_at" />
                 </div>
               </th>
               <th className="text-left px-4 py-3 text-sm font-semibold text-foreground">
@@ -142,39 +144,39 @@ const RequestTable = ({
           <tbody className="divide-y divide-border">
             {requests?.map((request) => (
               <tr key={request?.id} className="hover:bg-muted/30 transition-smooth">
-                <td className="px-4 py-4">
+                {/* <td className="px-4 py-4">
                   <input
                     type="checkbox"
                     checked={selectedRequests?.includes(request?.id)}
                     onChange={(e) => onSelectRequest(request?.id, e?.target?.checked)}
                     className="rounded border-border"
                   />
-                </td>
+                </td> */}
                 <td className="px-4 py-4">
                   <div className="flex items-center space-x-3">
-                    <Image
+                    {/* <Image
                       src={request?.employee?.avatar}
-                      alt={request?.employee?.name}
+                      alt={request?.employee?.full_name}
                       className="w-8 h-8 rounded-full object-cover"
-                    />
+                    /> */}
                     <div>
                       <div className="text-sm font-medium text-foreground">
-                        {request?.employee?.name}
+                        {request?.user?.full_name}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {request?.employee?.department}
+                        {request?.user?.position}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-foreground">
-                    {formatDate(request?.startDate)} - {formatDate(request?.endDate)}
+                    {formatDate(request?.start_date)} - {formatDate(request?.end_date)}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm font-medium text-foreground">
-                    {calculateWorkingDays(request?.startDate, request?.endDate)} días
+                    {calculateWorkingDays(request?.start_date, request?.end_date)} días
                   </div>
                   <div className="text-xs text-muted-foreground">
                     (sin domingos)
@@ -187,7 +189,7 @@ const RequestTable = ({
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-foreground">
-                    {formatDate(request?.submissionDate)}
+                    {formatDate(request?.created_at)}
                   </div>
                 </td>
                 <td className="px-4 py-4">
@@ -278,7 +280,7 @@ const RequestTable = ({
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Solicitud:</span>
                 <span className="text-foreground">
-                  {formatDate(request?.submissionDate)}
+                  {formatDate(request?.created_at)}
                 </span>
               </div>
               <div className="text-sm">

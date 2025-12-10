@@ -5,9 +5,10 @@ import Input from '../../../components/ui/Input';
 
 const VacationRequestForm = ({ availableDays, onSubmit, companyHolidays = [] }) => {
   const [formData, setFormData] = useState({
-    startDate: '',
-    endDate: '',
-    reason: ''
+    start_date: '',
+    end_date: '',
+    reason: '',
+    total_days: 0,
   });
   const [calculatedDays, setCalculatedDays] = useState(0);
   const [errors, setErrors] = useState({});
@@ -34,27 +35,27 @@ const VacationRequestForm = ({ availableDays, onSubmit, companyHolidays = [] }) 
   };
 
   useEffect(() => {
-    if (formData?.startDate && formData?.endDate) {
-      const days = calculateWorkingDays(formData?.startDate, formData?.endDate);
+    if (formData?.start_date && formData?.end_date) {
+      const days = calculateWorkingDays(formData?.start_date, formData?.end_date);
       setCalculatedDays(days);
     } else {
       setCalculatedDays(0);
     }
-  }, [formData?.startDate, formData?.endDate]);
+  }, [formData?.start_date, formData?.end_date]);
 
   const validateForm = () => {
     const newErrors = {};
     const today = new Date()?.toISOString()?.split('T')?.[0];
 
-    if (!formData?.startDate) {
+    if (!formData?.start_date) {
       newErrors.startDate = 'La fecha de inicio es requerida';
-    } else if (formData?.startDate < today) {
+    } else if (formData?.start_date < today) {
       newErrors.startDate = 'No puedes seleccionar fechas pasadas';
     }
 
-    if (!formData?.endDate) {
+    if (!formData?.end_date) {
       newErrors.endDate = 'La fecha de fin es requerida';
-    } else if (formData?.endDate < formData?.startDate) {
+    } else if (formData?.end_date < formData?.start_date) {
       newErrors.endDate = 'La fecha de fin debe ser posterior a la de inicio';
     }
 
@@ -81,12 +82,11 @@ const VacationRequestForm = ({ availableDays, onSubmit, companyHolidays = [] }) 
     try {
       await onSubmit({
         ...formData,
-        calculatedDays,
-        submittedAt: new Date()?.toISOString()
+        total_days: calculatedDays,
       });
       
       // Reset form
-      setFormData({ startDate: '', endDate: '', reason: '' });
+      setFormData({ start_date: '', end_date: '', reason: '' });
       setCalculatedDays(0);
     } catch (error) {
       console.error('Error submitting vacation request:', error);
@@ -117,20 +117,20 @@ const VacationRequestForm = ({ availableDays, onSubmit, companyHolidays = [] }) 
           <Input
             label="Fecha de Inicio"
             type="date"
-            value={formData?.startDate}
-            onChange={(e) => handleInputChange('startDate', e?.target?.value)}
+            value={formData?.start_date}
+            onChange={(e) => handleInputChange('start_date', e?.target?.value)}
             min={getTodayDate()}
-            error={errors?.startDate}
+            error={errors?.start_date}
             required
           />
 
           <Input
             label="Fecha de Fin"
             type="date"
-            value={formData?.endDate}
-            onChange={(e) => handleInputChange('endDate', e?.target?.value)}
-            min={formData?.startDate || getTodayDate()}
-            error={errors?.endDate}
+            value={formData?.end_date}
+            onChange={(e) => handleInputChange('end_date', e?.target?.value)}
+            min={formData?.start_date || getTodayDate()}
+            error={errors?.end_date}
             required
           />
         </div>

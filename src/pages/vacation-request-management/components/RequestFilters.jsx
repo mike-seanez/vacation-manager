@@ -9,7 +9,8 @@ const RequestFilters = ({
   onTabChange, 
   filters, 
   onFiltersChange,
-  requestCounts = { pending: 0, approved: 0, denied: 0, all: 0 }
+  requestCounts = { pending: 0, approved: 0, denied: 0, all: 0 },
+  departments = []
 }) => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -18,16 +19,6 @@ const RequestFilters = ({
     { id: 'approved', label: 'Aprobadas', count: requestCounts?.approved, color: 'bg-success' },
     { id: 'denied', label: 'Denegadas', count: requestCounts?.denied, color: 'bg-destructive' },
     { id: 'all', label: 'Todas', count: requestCounts?.all, color: 'bg-secondary' }
-  ];
-
-  const departmentOptions = [
-    { value: '', label: 'Todos los departamentos' },
-    { value: 'recursos-humanos', label: 'Recursos Humanos' },
-    { value: 'tecnologia', label: 'Tecnología' },
-    { value: 'ventas', label: 'Ventas' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'finanzas', label: 'Finanzas' },
-    { value: 'operaciones', label: 'Operaciones' }
   ];
 
   const handleFilterChange = (key, value) => {
@@ -87,7 +78,10 @@ const RequestFilters = ({
         
         <Select
           placeholder="Filtrar por departamento"
-          options={departmentOptions}
+          options={departments?.map((department) => ({
+            value: department?.id,
+            label: department?.name
+          }))}  
           value={filters?.department}
           onChange={(value) => handleFilterChange('department', value)}
         />

@@ -22,25 +22,25 @@ const EmployeeStatsCards = ({ employees = [] }) => {
       icon: 'Users',
       color: 'text-primary',
       bgColor: 'bg-primary/10',
-      change: '+2.5%',
+      change: '0',
       changeType: 'positive'
     },
-    {
-      title: 'Empleados Activos',
-      value: stats?.active,
-      icon: 'UserCheck',
-      color: 'text-success',
-      bgColor: 'bg-success/10',
-      change: `${((stats?.active / stats?.total) * 100)?.toFixed(1)}%`,
-      changeType: 'neutral'
-    },
+    // {
+    //   title: 'Empleados Activos',
+    //   value: stats?.active,
+    //   icon: 'UserCheck',
+    //   color: 'text-success',
+    //   bgColor: 'bg-success/10',
+    //   change: `${((stats?.active / stats?.total) * 100)?.toFixed(1)}%`,
+    //   changeType: 'neutral'
+    // },
     {
       title: 'Nuevos este Mes',
       value: stats?.newThisMonth,
       icon: 'UserPlus',
       color: 'text-accent',
       bgColor: 'bg-accent/10',
-      change: '+12.3%',
+      change: '0%',
       changeType: 'positive'
     },
   ];

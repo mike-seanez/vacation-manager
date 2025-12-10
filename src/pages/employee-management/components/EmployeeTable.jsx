@@ -4,16 +4,16 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 
 const EmployeeTable = ({ 
-  employees, 
+  employees,
+  departments,
   onEdit, 
   onView, 
-  onPasswordReset, 
   onDeactivate,
   selectedEmployees,
   onSelectEmployee,
   onSelectAll 
 }) => {
-  const [sortField, setSortField] = useState('fullName');
+  const [sortField, setSortField] = useState('full_name');
   const [sortDirection, setSortDirection] = useState('asc');
 
   const handleSort = (field) => {
@@ -29,7 +29,7 @@ const EmployeeTable = ({
     let aValue = a?.[sortField];
     let bValue = b?.[sortField];
     
-    if (sortField === 'joinDate') {
+    if (sortField === 'join_date') {
       aValue = new Date(aValue);
       bValue = new Date(bValue);
     }
@@ -92,7 +92,7 @@ const EmployeeTable = ({
                 />
               </th>
               <th className="px-4 py-3 text-left">
-                <SortButton field="fullName">Nombre Completo</SortButton>
+                <SortButton field="full_name">Nombre Completo</SortButton>
               </th>
               <th className="px-4 py-3 text-left">
                 <SortButton field="position">Puesto</SortButton>
@@ -101,7 +101,7 @@ const EmployeeTable = ({
                 <SortButton field="department">Departamento</SortButton>
               </th>
               <th className="px-4 py-3 text-left">
-                <SortButton field="joinDate">Fecha de Ingreso</SortButton>
+                <SortButton field="join_date">Fecha de Ingreso</SortButton>
               </th>
               <th className="px-4 py-3 text-left">Balance Vacacional</th>
               <th className="px-4 py-3 text-left">Estado</th>
@@ -123,18 +123,18 @@ const EmployeeTable = ({
                   <div className="flex items-center space-x-3">
                     <Image
                       src={employee?.avatar}
-                      alt={employee?.fullName}
+                      alt={employee?.full_name}
                       className="w-8 h-8 rounded-full object-cover"
                     />
                     <div>
-                      <div className="font-medium text-foreground">{employee?.fullName}</div>
+                      <div className="font-medium text-foreground">{employee?.full_name}</div>
                       <div className="text-sm text-muted-foreground">{employee?.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-foreground">{employee?.position}</td>
-                <td className="px-4 py-3 text-foreground">{employee?.department}</td>
-                <td className="px-4 py-3 text-foreground">{formatDate(employee?.joinDate)}</td>
+                <td className="px-4 py-3 text-foreground">{departments?.find(dep => dep?.id === employee?.department_id)?.name}</td>
+                <td className="px-4 py-3 text-foreground">{formatDate(employee?.join_date)}</td>
                 <td className="px-4 py-3">
                   <div className="text-foreground font-medium">{employee?.vacationBalance} días</div>
                   <div className="text-xs text-muted-foreground">
@@ -162,7 +162,7 @@ const EmployeeTable = ({
                     >
                       <span className="sr-only">Editar</span>
                     </Button>
-                    <Button
+                    {/* <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onPasswordReset(employee)}
@@ -170,7 +170,7 @@ const EmployeeTable = ({
                       iconSize={16}
                     >
                       <span className="sr-only">Restablecer contraseña</span>
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -202,11 +202,11 @@ const EmployeeTable = ({
                 />
                 <Image
                   src={employee?.avatar}
-                  alt={employee?.fullName}
+                  alt={employee?.full_name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <h3 className="font-medium text-foreground">{employee?.fullName}</h3>
+                  <h3 className="font-medium text-foreground">{employee?.full_name}</h3>
                   <p className="text-sm text-muted-foreground">{employee?.position}</p>
                 </div>
               </div>
@@ -220,7 +220,7 @@ const EmployeeTable = ({
               </div>
               <div>
                 <span className="text-muted-foreground">Fecha de Ingreso:</span>
-                <p className="text-foreground font-medium">{formatDate(employee?.joinDate)}</p>
+                <p className="text-foreground font-medium">{formatDate(employee?.join_date)}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">Balance Vacacional:</span>

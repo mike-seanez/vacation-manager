@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
+import { useUser } from 'domain/UseCases/userCases/useUser';
 
-const QuickAddEmployee = () => {
+const QuickAddEmployee = ({ employees, newUsersThisMonth }) => {
+  const { createUser } = useUser();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     position: '',
-    department: ''
+    department: '',
+    username: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,17 +36,27 @@ const QuickAddEmployee = () => {
     e?.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await createUser({
+        fullName: formData?.fullName,
+        email: formData?.email,
+        position: formData?.position,
+        department: formData?.department,
+        username: formData?.username
+      });
       console.log('Empleado agregado:', formData);
       setFormData({
         fullName: '',
         email: '',
         position: '',
-        department: ''
+        department: '',
+        username: ''
       });
       setIsSubmitting(false);
-    }, 1000);
+    } catch (error) {
+      console.error('Error al agregar empleado:', error);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,6 +74,16 @@ const QuickAddEmployee = () => {
           value={formData?.fullName}
           onChange={handleInputChange}
           required
+        />
+
+        <Input 
+        label="Nombre de usuario"
+        type="text"
+        name="username"
+        placeholder="Ej: maria_gonzalez"
+        value={formData?.username}
+        onChange={handleInputChange}
+        required
         />
 
         <Input
@@ -124,12 +147,12 @@ const QuickAddEmployee = () => {
       </form>
       <div className="mt-6 pt-4 border-t border-border">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Empleados este mes:</span>
-          <span className="font-medium text-foreground">+12</span>
+          <span className="text-muted-foreground">Empleados nuevos este mes:</span>
+          <span className="font-medium text-foreground">{newUsersThisMonth || 0}</span>
         </div>
         <div className="flex items-center justify-between text-sm mt-1">
           <span className="text-muted-foreground">Total empleados:</span>
-          <span className="font-medium text-foreground">247</span>
+          <span className="font-medium text-foreground">{employees?.length || 0}</span>
         </div>
       </div>
     </div>

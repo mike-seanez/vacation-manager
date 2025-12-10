@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const QuickStats = ({ stats }) => {
-  const { totalRequests, approvedRequests, pendingRequests, deniedRequests, averageResponseTime } = stats;
+  const { totalRequests, approvedRequests, pendingRequests, deniedRequests } = stats;
 
   const statItems = [
     {
@@ -52,17 +52,6 @@ const QuickStats = ({ stats }) => {
           </div>
         ))}
       </div>
-      {averageResponseTime && (
-        <div className="bg-muted/50 rounded-lg p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Icon name="Timer" size={16} className="text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tiempo promedio de respuesta:</span>
-            </div>
-            <span className="text-sm font-medium text-foreground">{averageResponseTime} días</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -20,14 +20,6 @@ const RequestStats = ({ stats }) => {
       borderColor: 'border-success/20'
     },
     {
-      title: 'Tiempo Promedio de Respuesta',
-      value: `${stats?.averageResponseTime} días`,
-      icon: 'Timer',
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-      borderColor: 'border-primary/20'
-    },
-    {
       title: 'Total de Solicitudes',
       value: stats?.total,
       icon: 'FileText',

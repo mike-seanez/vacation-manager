@@ -19,19 +19,13 @@ const BlogPostTable = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
 
-  const statusOptions = [
-    { value: 'all', label: 'Todos los Estados' },
-    { value: 'draft', label: 'Borrador' },
-    { value: 'published', label: 'Publicado' },
-    { value: 'scheduled', label: 'Programado' }
-  ];
 
-  const sortOptions = [
-    { value: 'date', label: 'Fecha' },
-    { value: 'title', label: 'Título' },
-    { value: 'author', label: 'Autor' },
-    { value: 'views', label: 'Visualizaciones' }
-  ];
+  // const sortOptions = [
+  //   { value: 'date', label: 'Fecha' },
+  //   { value: 'title', label: 'Título' },
+  //   { value: 'author', label: 'Autor' },
+  //   { value: 'views', label: 'Visualizaciones' }
+  // ];
 
   const filteredAndSortedPosts = posts?.filter(post => {
       const matchesSearch = post?.title?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
@@ -60,22 +54,6 @@ const BlogPostTable = ({
       }
     });
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      draft: { color: 'bg-warning text-warning-foreground', label: 'Borrador' },
-      published: { color: 'bg-success text-success-foreground', label: 'Publicado' },
-      scheduled: { color: 'bg-accent text-accent-foreground', label: 'Programado' }
-    };
-    
-    const config = statusConfig?.[status] || statusConfig?.draft;
-    
-    return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${config?.color}`}>
-        {config?.label}
-      </span>
-    );
-  };
-
   const handleDeleteClick = (post) => {
     setPostToDelete(post);
     setShowDeleteModal(true);
@@ -90,18 +68,13 @@ const BlogPostTable = ({
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString)?.toLocaleDateString('es-MX', {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1);
+    return date?.toLocaleDateString('es-MX', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
-  };
-
-  const formatViews = (views) => {
-    if (views >= 1000) {
-      return `${(views / 1000)?.toFixed(1)}k`;
-    }
-    return views?.toString();
   };
 
   return (
@@ -120,29 +93,6 @@ const BlogPostTable = ({
               onChange={(e) => setSearchTerm(e?.target?.value)}
               className="w-full sm:w-64"
             />
-            
-            <Select
-              options={statusOptions}
-              value={statusFilter}
-              onChange={setStatusFilter}
-              className="w-full sm:w-48"
-            />
-            
-            <div className="flex items-center space-x-2">
-              <Select
-                options={sortOptions}
-                value={sortBy}
-                onChange={setSortBy}
-                className="w-32"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                iconName={sortOrder === 'asc' ? "ArrowUp" : "ArrowDown"}
-                iconSize={16}
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -153,9 +103,7 @@ const BlogPostTable = ({
             <tr>
               <th className="text-left p-4 text-sm font-medium text-muted-foreground">Post</th>
               <th className="text-left p-4 text-sm font-medium text-muted-foreground">Autor</th>
-              <th className="text-left p-4 text-sm font-medium text-muted-foreground">Estado</th>
               <th className="text-left p-4 text-sm font-medium text-muted-foreground">Fecha</th>
-              <th className="text-left p-4 text-sm font-medium text-muted-foreground">Vistas</th>
               <th className="text-right p-4 text-sm font-medium text-muted-foreground">Acciones</th>
             </tr>
           </thead>
@@ -176,10 +124,10 @@ const BlogPostTable = ({
                 <tr key={post?.id} className="border-b border-border hover:bg-muted/50 transition-smooth">
                   <td className="p-4">
                     <div className="flex items-center space-x-3">
-                      {post?.featuredImage && (
+                      {post?.cover_image && (
                         <div className="w-12 h-12 bg-muted rounded-md overflow-hidden flex-shrink-0">
                           <Image
-                            src={post?.featuredImage}
+                            src={post?.cover_image}
                             alt={post?.title}
                             className="w-full h-full object-cover"
                           />
@@ -189,9 +137,6 @@ const BlogPostTable = ({
                         <h3 className="text-sm font-medium text-foreground truncate">
                           {post?.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {post?.category}
-                        </p>
                       </div>
                     </div>
                   </td>
@@ -200,20 +145,11 @@ const BlogPostTable = ({
                       <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
                         <Icon name="User" size={14} color="white" />
                       </div>
-                      <span className="text-sm text-foreground">{post?.author}</span>
+                      <span className="text-sm text-foreground">{post?.author?.full_name}</span>
                     </div>
                   </td>
                   <td className="p-4">
-                    {getStatusBadge(post?.status)}
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm text-foreground">{formatDate(post?.publishDate)}</span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-1">
-                      <Icon name="Eye" size={14} className="text-muted-foreground" />
-                      <span className="text-sm text-foreground">{formatViews(post?.views)}</span>
-                    </div>
+                    <span className="text-sm text-foreground">{formatDate(post?.created_at)}</span>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center justify-end space-x-2">
