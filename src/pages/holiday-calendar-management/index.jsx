@@ -31,7 +31,6 @@ const HolidayCalendarManagement = () => {
       const response = await getHolidays();
       setMockHolidays(response || []);
       setHolidays(response || []);
-      console.log('response ', response);
     };
     fetchHolidays();
   }, []);
@@ -117,7 +116,6 @@ const HolidayCalendarManagement = () => {
       date: holiday?.date?.replace(/^\d{4}/, selectedYear?.toString())
     }));
     setHolidays(updatedHolidays);
-    console.log('holidays ', holidays);
   }, [selectedYear]);
 
   const handleMenuToggle = () => {

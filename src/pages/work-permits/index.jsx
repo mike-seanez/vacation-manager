@@ -23,9 +23,7 @@ const WorkPermits = () => {
   const { getWorkPermitsByUserId, createWorkPermit, deleteWorkPermit } = useWorkPermit();
 
   useEffect(() => {
-    console.log('el useeffect')
     const fetchMyPermits = async () => {
-      console.log('la funct');
       
       try {
         const permits = await getWorkPermitsByUserId();

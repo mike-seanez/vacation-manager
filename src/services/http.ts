@@ -2,7 +2,7 @@ import axios, { AxiosHeaders, AxiosInstance, AxiosRequestConfig } from "axios";
 import { useJWT } from "./useJWT";
 
 const instance = axios.create({
-  baseURL: "http://localhost:4001/",
+  baseURL: "https://cykvtmgczc.us-east-2.awsapprunner.com/",
 });
 
 type HTTPRequestConfig = AxiosRequestConfig;

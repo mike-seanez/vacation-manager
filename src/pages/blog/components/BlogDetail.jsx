@@ -7,7 +7,6 @@ import Image from '../../../components/AppImage';
 const BlogDetail = ({ post }) => {
   const navigate = useNavigate();
   const authorName = typeof post?.author === 'object' ? post?.author?.full_name : post?.author;
-  console.log(post);
   
   if (!post) {
     return (

@@ -39,7 +39,7 @@ const NavigationHeader = ({ onMenuToggle, user = null }) => {
             <div className="w-22 h-10 rounded-lg flex items-center justify-center">
               <img
                 className="w-20 h-auto"
-                src="/public/assets/images/logo.png"
+                src="/assets/images/logo.png"
                 alt="logo"
               />
             </div>

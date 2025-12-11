@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password
       );
 
-      console.log('Response del JWT ', response)
 
       setToken(response);
       await useJWT().setJWT(response);

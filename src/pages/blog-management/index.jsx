@@ -45,7 +45,6 @@ const BlogManagement = () => {
   };
 
   const handleNewPost = () => {
-    console.log('blogPosts', blogPosts)
     setEditingPost(null);
     setShowEditor(true);
   };

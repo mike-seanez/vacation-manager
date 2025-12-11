@@ -92,7 +92,7 @@ const Login = () => {
           <div className="w-25 h-25 rounded-full flex items-center justify-center mb-4">
             <Image
               className="w-25 h-auto"
-              src="/public/assets/images/logo.png"
+              src="/assets/images/logo.png"
               alt="logo"
             />
           </div>

@@ -16,7 +16,6 @@ export const useGetUser = () => {
       if (resJWT) {
         const response = await getUser(resJWT.uid);
         if (response) setCurrentUser(response);
-        console.log(response);
       }
     };
     fetchUser();
@@ -48,7 +47,6 @@ export const useGetAllNewUsersThisMonth = () => {
     const fetchNewUsersThisMonth = async () => {
       const response = await getNewUsersThisMonth();
       if (response) setNewUsersThisMonth(response);
-      console.log(response);
     };
     fetchNewUsersThisMonth();
   }, []);

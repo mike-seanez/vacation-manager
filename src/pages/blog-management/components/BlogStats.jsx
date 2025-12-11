@@ -2,7 +2,6 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const BlogStats = ({ posts = [] }) => {
-  console.log(posts);
   const totalPosts = posts?.length;  
   const thisMonthPosts = posts?.filter(post => {
     const postDate = new Date(post.publishDate);
