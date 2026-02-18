@@ -35,7 +35,7 @@ const RoleBasedSidebar = ({
       label: 'Solicitudes de vacaciones',
       path: '/vacation-request-management',
       icon: 'Calendar',
-      requiredRole: [Roles.ADMINISTRATOR, Roles.HUMAN_RESOURCES, Roles.EMPLOYEE],
+      requiredRole: [Roles.ADMINISTRATOR, Roles.HUMAN_RESOURCES],
       tooltip: 'Review and approve vacation requests'
     },
     {
@@ -49,7 +49,7 @@ const RoleBasedSidebar = ({
       label: 'Manejo de Blog',
       path: '/blog-management',
       icon: 'FileText',
-      requiredRole: [Roles.ADMINISTRATOR, Roles.HUMAN_RESOURCES],
+      requiredRole: [Roles.ADMINISTRATOR],
       tooltip: 'Create and manage company blog posts'
     },
     {

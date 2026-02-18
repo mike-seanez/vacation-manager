@@ -44,7 +44,6 @@ const QuickAddEmployee = ({ employees, newUsersThisMonth }) => {
         department: formData?.department,
         username: formData?.username
       });
-      console.log('Empleado agregado:', formData);
       setFormData({
         fullName: '',
         email: '',

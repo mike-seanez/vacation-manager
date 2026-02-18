@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import NavigationHeader from "../../components/ui/NavigationHeader";
 import RoleBasedSidebar from "../../components/ui/RoleBasedSidebar";
 import BreadcrumbTrail from "../../components/ui/BreadcrumbTrail";
-import QuickActionPanel from "../../components/ui/QuickActionPanel";
 import Button from "../../components/ui/Button";
 import EmployeeTable from "./components/EmployeeTable";
 import EmployeeFilters from "./components/EmployeeFilters";
@@ -12,11 +11,18 @@ import EmployeeStatsCards from "./components/EmployeeStatsCards";
 import { useUser } from "domain/UseCases/userCases/useUser";
 import { useGetUser } from "../../hooks/useGetUser";
 import { useDepartment } from "domain/UseCases/departmentCases/useDepartment";
+import UpdateEmployeeModal from "./components/UpdateEmployeeModal";
+import DeleteEmployeeModal from "./components/DeleteEmployeeModal";
+import ShowEmployeeModal from "./components/ShowEmployeeModal";
 
 const EmployeeManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState({});
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
@@ -56,14 +62,14 @@ const EmployeeManagement = () => {
           emp?.full_name?.toLowerCase()?.includes(searchTerm) ||
           emp?.email?.toLowerCase()?.includes(searchTerm) ||
           emp?.position?.toLowerCase()?.includes(searchTerm) ||
-          emp?.employeeId?.toLowerCase()?.includes(searchTerm)
+          emp?.employeeId?.toLowerCase()?.includes(searchTerm),
       );
     }
 
     // Apply department filter
     if (filters?.department) {
       filtered = filtered?.filter(
-        (emp) => emp?.department === filters?.department
+        (emp) => emp?.department === filters?.department,
       );
     }
 
@@ -75,24 +81,24 @@ const EmployeeManagement = () => {
     // Apply date range filters
     if (filters?.joinDateFrom) {
       filtered = filtered?.filter(
-        (emp) => new Date(emp.join_date) >= new Date(filters.joinDateFrom)
+        (emp) => new Date(emp.join_date) >= new Date(filters.joinDateFrom),
       );
     }
     if (filters?.joinDateTo) {
       filtered = filtered?.filter(
-        (emp) => new Date(emp.join_date) <= new Date(filters.joinDateTo)
+        (emp) => new Date(emp.join_date) <= new Date(filters.joinDateTo),
       );
     }
 
     // Apply vacation balance filters
     if (filters?.minVacationBalance) {
       filtered = filtered?.filter(
-        (emp) => emp?.vacationBalance >= parseInt(filters?.minVacationBalance)
+        (emp) => emp?.vacationBalance >= parseInt(filters?.minVacationBalance),
       );
     }
     if (filters?.maxVacationBalance) {
       filtered = filtered?.filter(
-        (emp) => emp?.vacationBalance <= parseInt(filters?.maxVacationBalance)
+        (emp) => emp?.vacationBalance <= parseInt(filters?.maxVacationBalance),
       );
     }
 
@@ -119,18 +125,23 @@ const EmployeeManagement = () => {
   };
 
   const handleEditEmployee = (employee) => {
-    console.log("Edit employee:", employee);
-    // Implementation for edit functionality
+    setSelectedEmployee(employee);
+    setShowUpdateModal(true);
   };
 
   const handleViewEmployee = (employee) => {
-    console.log("View employee:", employee);
-    // Implementation for view functionality
+    setSelectedEmployee(employee);
+    setShowViewModal(true);
   };
 
   const handleDeactivateEmployee = (employee) => {
-    console.log("Deactivate employee:", employee);
-    // Implementation for deactivation
+    setSelectedEmployee(employee);
+    setShowDeleteModal(true);
+  };
+
+  const handleSuccessDelete = (employeeId) => {
+    setEmployees((prev) => prev?.filter((emp) => emp?.id !== employeeId));
+    setShowDeleteModal(false);
   };
 
   const handleSelectEmployee = (employeeId, isSelected) => {
@@ -156,8 +167,8 @@ const EmployeeManagement = () => {
       case "activate":
         setEmployees((prev) =>
           prev?.map((emp) =>
-            employeeIds?.includes(emp?.id) ? { ...emp, status: "active" } : emp
-          )
+            employeeIds?.includes(emp?.id) ? { ...emp, status: "active" } : emp,
+          ),
         );
         break;
       case "deactivate":
@@ -165,8 +176,8 @@ const EmployeeManagement = () => {
           prev?.map((emp) =>
             employeeIds?.includes(emp?.id)
               ? { ...emp, status: "inactive" }
-              : emp
-          )
+              : emp,
+          ),
         );
         break;
       case "suspend":
@@ -174,8 +185,8 @@ const EmployeeManagement = () => {
           prev?.map((emp) =>
             employeeIds?.includes(emp?.id)
               ? { ...emp, status: "suspended" }
-              : emp
-          )
+              : emp,
+          ),
         );
         break;
       case "export":
@@ -249,8 +260,6 @@ const EmployeeManagement = () => {
 
             <EmployeeStatsCards employees={employees} />
 
-            <QuickActionPanel userRole="admin" className="mb-6" />
-
             <EmployeeFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -282,6 +291,29 @@ const EmployeeManagement = () => {
               onClose={() => setShowAddModal(false)}
               onSave={handleAddEmployee}
               departments={departments}
+              employees={employees}
+            />
+
+            <UpdateEmployeeModal
+              isOpen={showUpdateModal}
+              onClose={() => setShowUpdateModal(false)}
+              departments={departments}
+              employees={employees}
+              employee={selectedEmployee}
+            />
+
+            <DeleteEmployeeModal
+              isOpen={showDeleteModal}
+              onClose={() => setShowDeleteModal(false)}
+              onSuccessDelete={handleSuccessDelete}
+              employee={selectedEmployee}
+            />
+
+            <ShowEmployeeModal
+              isOpen={showViewModal}
+              onClose={() => setShowViewModal(false)}
+              employee={selectedEmployee}
+              employees={employees}
             />
           </div>
         </div>
