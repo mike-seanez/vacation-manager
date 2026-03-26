@@ -129,11 +129,13 @@ const VacationRequestManagement = () => {
   const handleApprove = async (requestId, comment = '') => {
     await acceptVacationRequest(requestId);
     setSelectedRequests(selectedRequests?.filter(id => id !== requestId));
+    setRequests(requests?.map(request => request?.id === requestId ? { ...request, status: 'approved' } : request));
   };
 
   const handleDeny = async (requestId, comment = '') => {
     await rejectVacationRequest(requestId);
     setSelectedRequests(selectedRequests?.filter(id => id !== requestId));
+    setRequests(requests?.map(request => request?.id === requestId ? { ...request, status: 'denied' } : request));
   };
 
   // const handleBulkApprove = async (requestIds, comment = '') => {
